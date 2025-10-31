@@ -1,4 +1,4 @@
-# GCP Engineer - Core Infraestructure (Module 2)
+# GCP Engineer - Core Infraestructure (Module 2 - Part 1)
 
 ## Introduccion a la computacion a la nube
 La computacion en la nube es una forma de usar la tecnologia de la informacion con estas cincos cualidades de igual importancia
