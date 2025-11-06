@@ -1,0 +1,191 @@
+{
+  "main": {
+    "id": "f272d07f488fce1c",
+    "type": "split",
+    "children": [
+      {
+        "id": "844bb355b413a7fd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9ca067bbd0cd4702",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Essential_Google_Cloud_Infrastructure.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Essential_Google_Cloud_Infrastructure"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "2d51dd36bb96a3aa",
+    "type": "split",
+    "children": [
+      {
+        "id": "3cfbadd1fc777ef7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "85bc917edd14cc02",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "f1ece061ef0def41",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "67857eb2d3ec6b34",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "acec00a55345d8a3",
+    "type": "split",
+    "children": [
+      {
+        "id": "648bf462da09bf5f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fd24c8f25d8cdd01",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Essential_Google_Cloud_Infrastructure.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Essential_Google_Cloud_Infrastructure"
+            }
+          },
+          {
+            "id": "a911a11cfa953f93",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Essential_Google_Cloud_Infrastructure.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Essential_Google_Cloud_Infrastructure"
+            }
+          },
+          {
+            "id": "915dcff9049d303a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "b4a7bceb62cf2c47",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Essential_Google_Cloud_Infrastructure.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Essential_Google_Cloud_Infrastructure"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "9ca067bbd0cd4702",
+  "lastOpenFiles": [
+    "images/Pasted image 20251105075033.png",
+    "images/Pasted image 20251105224529.png",
+    "images/Pasted image 20251105223831.png",
+    "images/Pasted image 20251105223458.png",
+    "images/Pasted image 20251105080738.png",
+    "images/Pasted image 20251105075110.png",
+    "images",
+    "Nueva carpeta",
+    "Pasted image 20251105224529.png",
+    "Pasted image 20251105223831.png",
+    "Pasted image 20251105223458.png",
+    "Pasted image 20251105080738.png",
+    "Pasted image 20251105075110.png",
+    "GCPEngineer_Module2_2.md",
+    "README.md",
+    "GCPEngineer_Module2_1.md"
+  ]
+}
