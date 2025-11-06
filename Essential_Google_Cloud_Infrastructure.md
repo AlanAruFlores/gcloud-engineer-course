@@ -214,3 +214,105 @@ Para extender el rango IP de la subred debemos ir a ella y configurar manualment
 - Proporciona una baja latencia ya que contiene ubicaciones redundantes en todo el mundo
 - Alta disponibilidad 
 - Permite crear y actualizar  millones de registros DNS sin la carga de gestionar tus propios servidores y software DNS.
+
+
+
+## Virtual Machines
+- Son el componente  de infraestructura mas comun y en Google Cloud las proporciona Compute Engine.
+- Es similar a una computadora fisica.
+- Tienen de una CPU virtual, cierta cantidad de memoria, almacenamiento en disco y una direccion IP
+- Compute Engine es el servicio para proveer la creacion de las maquinas virtuales 
+
+
+## Compute Engine  
+- Nos centraremos en *las instancias de las maquinas virtuales*
+- Compute Engine ofrece la maxima flexibilidad: ejecuta en el lenguaje que quieras.
+- Se trata simplemente de un modelo de IaaS
+- Dispone de una maquina virtual y un S.O y puede elegir como gestionarlo y como manejar aspectos como el escalado automatico
+- Compute Engine se trata de servidores fisicos  a los que estas acostumbrado, ejecutandose dentro de Google Cloud con *diversas configuraciones.*
+- Tantos las maquinas "predefinidas" como las "custom" permiten seleccionar:
+	- vCPUs y RAM
+	- Almacenamiento
+		- persistent Disk HDD y SSD
+		- Local SSD
+		- Cloud Storage
+	- Networking interfaces
+	- Linux o Windows
+
+#### TPU (Tensor Processing Unit)
+Son circuitos integrados especificos para aplicaciones  desarrollados a medida por Google y usados para acelerar las cargas de trabajo de aprendizaje automatico (Machine Learning)
+TPU Son generalmente mas rapidas que las de proposito general como CPU / GPU  actuales para aplicaciones de IA y aprendizaje automatico.
+Se recomiendan principalmente para modelos que se entrenan durante largos periodos.
+
+
+
+## VM Access and lifecycle 
+![[Pasted image 20251105075033.png]]
+- Para acceder a una instancia VM, el creador de la instancia tiene privilegios de administrador completos sobre esa instancia
+- En una *instancia Linux*, el creador tiene la capacidad SSH y puede usar la consola  de Google Cloud para otorgar permisos SSH a otros usuarios
+- En una *instancia Windows* el creador puede  usar la consola para generar un nombre de usuario y una contraseña. Despues de eso, puede conectarse a la instancia usando RDP (Remote Desktop Protocol)
+
+
+
+![[Pasted image 20251105075110.png]]
+-  *Provisioning:* Cuando elegimos las propiedades de la instancia y le damos al boton de *Crear* entra en este estado. Aca se estan reservando los recursos de la instancia como RAM, CPU ,etc pero todavia no esta en ejecucion
+- *Staging:* Aca la instancia ya  adquirio los recursos y se prepara para su lanzamiento. Aca setea la IP de la VM, imagen del SO e inicia el sistema.
+- *Running*: Inicia los scripts preconfigurados y habilitara el acceso SSH o RDP
+- *Stopping:* Aca si necesitamos agregar mas recursos como el disco, entonces debe entrar en este estado. Para ello, ejecutara los scripts preconfigurados de apagado automatico y finalizara en el estado  terminado.
+- *Terminated:* Desde este estado podemos reiniciar la maquina a su estado *Provisioning* o eliminarlo
+- *Repairing:* sucede cuando en la VM encuentra un error interno o la maquina subyacente no esta disponible debido a tareas de mantenimiento. No se cobra nada si se encuentra en este estado
+	- *Suspending y Suspended*: Es el estado de suspension de la maquina y podemos volver a iniciarla o eliminarla
+
+
+
+![[Pasted image 20251105080738.png]]
+- Algunos de estos estados requieren de la Consola de Google Cloud, el comando gcloud, y otros se hacen mediante el S.O
+- Hay que ver que algunos de estas acciones duran 90 segundos, si la instancia pasa mas de 30 segundos entonces *Compute Engine* envia una señal ACPI G3 Mechanical Off al Sistema operativo.
+
+
+
+## Compute Options
+![[Pasted image 20251105223458.png]]
+- Tenemos 3 maneras de instanciar una VM en Google Cloud
+	- *1) Mediante la console de Google Cloud*
+	- *2) Mediante la Shell de Google*
+	- *3) Consumiendo una API REST*
+
+### Estructura del tipo de machine
+![[Pasted image 20251105223831.png]] 
+	- Existen varias Machines Familys en donde cada *familia* se organiza  a su vez   en *series* de maquinas y los *tipos* de maquinas predefinidos estan dentro de cada serie.
+	- Una familia de maquinas es un conjunto  seleccionado de configuraciones  de procesador y hardware optimizadas para la cartga de trabajo especifica
+
+### Compute Engine machine families
+Existen 4 familias de maquinas de Compute Engine
+![[Pasted image 20251105224529.png]]
+- *General Purpose:* Ofrece la mejor relacion entre  precio-rendimiento con las relaciones vCPU/memoria mas flexibles. Este abarca machines de series:
+	- *E2*: son adecuados para aplicaciones web, abarca vCPU entre 0,25 a 1 y por cada vCPU con un maximo de 8 gb ram
+	- *N2 / N2D*: son los tipos mas flexibles y proporcionan un equilibrio entre precio y rendimiento en una amplia gama de configuraciones de VMs. Las maquinas N2 admiten el ultimo  procesador escalable de *segunda generacion de intel* con hasta 128 vCPU y de 0,5 a 8GB de memoria por vCPU.
+		- Cascade Lake es el procesador por defecto de hasta 80 vCPU
+		- Ice Lake es el procesador predeterminado  para regiones  y zonas especificas
+		- N2D son VMs de proposito general basadas en AMD, estas usan el procesador de  *EPYC Milan* y *EPYC Rome* y proporcionan hasta 224 vCPU por nodo
+	- *Tau T2A y Tau T2D* estan optimizadas para un rendimiento rentable para *workloads* exigentes.
+		- Las Tau T2D estan contruidas sobre los ultimos procesadores AMD EPYC de  tercera generacion. Son adecuados  para cargas de trabajo escalables, incluyendo servidores web, microservicios en contenedores, transcodificacion de medios y aplicaciones Java. Viene con configuracion con hasta 60 vCPU y 4gb de memoria por vCPU
+		- Las Tau T2A es la primera serie de maquinas en Google Cloud que funciona con procesadores ARM
+
+
+
+- *Compute Optimized*: tiene el mayor rendimiento por nucleo en Compute Engine y esta preparada para workloads con uso intensivo
+		- *C2:* son el tipo de VM  mas adecuado para cargas de trabajo con uso intensivo de computacion, incluidos los juegos AAA, la automatizacion del diseño electronico y la computacion de alto rendimiento en simulaciones Viene con un aproximado de 3GHz en los nucleos y va desde 4 a 60 vCPU y ofrece hasta  240 GB de memoria
+		- *C2D:* ofrece los tamaños de VM mas grandes y son los mas adecuados para la computacion de alto rendimiento .
+			- Cuenta con la mayor memoria cache
+			- Van desde  2 a 112 vCPU y ofrecen 4GB de memoria por vCPU
+		- *H3:* ofrece 88 nucleo y 352GB de memoria DDR5.
+
+
+- *Memory Optimized:* propociona la mayor cantidad de recursos de computo y memoria. Ideales para workloads que requieren memoria/vCPU mas altas.
+	- *M1:* Tiene hasta 4TB de memoria
+	- *M2:* Tiene hasta 12TB de memoria
+		- Las series M1 y M2 son muy adecuadas para grandes bases de datos  en memoria como SAP HANA asi como workloads de analisis de datos en memoria.
+		- Ofrecen el menor coste por GB de memoria en Compute Engine
+	- *M3:* ofrecen hasta 128 vCPU, con hasta 30.5 GB de memoria por vCPU. Esta disponibles para procesadores de tipo *Intel Ice Lake*
+
+ - *Accelerator Optimized:* es ideal para workloads de computacion masivamente paralelas  de la arquitectura *Compute Unified Device Architecture* como para Machine Learning y la computacion de alto rendimiento
+	 - *A2:* tiene de 12 a 96 vCPU y hasta 1360 GB de memoria. Ademas tiene un numero fijo de 16 GPU Ampere A100 de NVIDIA conectadas
+	 - *G2:* ofrecen desde 4 a 96 vCPU, hasta 432 GB de memoria
