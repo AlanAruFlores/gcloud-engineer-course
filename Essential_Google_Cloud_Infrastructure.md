@@ -316,3 +316,40 @@ Existen 4 familias de maquinas de Compute Engine
  - *Accelerator Optimized:* es ideal para workloads de computacion masivamente paralelas  de la arquitectura *Compute Unified Device Architecture* como para Machine Learning y la computacion de alto rendimiento
 	 - *A2:* tiene de 12 a 96 vCPU y hasta 1360 GB de memoria. Ademas tiene un numero fijo de 16 GPU Ampere A100 de NVIDIA conectadas
 	 - *G2:* ofrecen desde 4 a 96 vCPU, hasta 432 GB de memoria
+
+## Preemptible
+- Una VM interrumpible es una instancia que se puede crear y ejecutar a un costo mucho menor  que las instancias normales 
+- Pueden ser interrumpidas y no se cobrara nada si eso  ocurre  durante el primer minuto
+- Solo estan operativas durante un maximo de 24 horas
+- Cabe destacar que no existen migraciones en vivo  ni reinicios automaticos  en las VMs interrumpibles 
+- Se pueden crear Sistemas de monitoreo y Load balancers.
+- Uno de los principales casos de uso de las VMs interrumpibles  es la ejecucion de un trabajo de procesamiento por lotes. Si alguna de esas instancias  finalizan durante  el procesamiento, el trabajo se relantiza pero no se detiene por completo sin sobrecargar sus instancias  existentes y sin que tenga que pagar el precio completo  por instancias normales adicionales
+## Spot VMs
+- son la ultima version de las VMs interrumpibles
+- ofrecen nuevas caracteristicas  que las maquinas virtuales  interrumpibles no admiten
+- Compute Engine podria interrumpir los Spot VMs si necesita recuperar recursos para otras tareas
+- No pueden migrar en vivo para convertirse en VMs estandar mientras estan en ejecucion
+
+
+## Solo-Tenant nodes
+![[Pasted image 20251106214128.png]]
+- Si tiene workloads que necesita aislamiento fisico de otras cargas de trabajo o VMs para cumplir con los requisitos de cumplimiento , deberiamos considerar estos *solo-tenant nodes*
+- Es un servidor fisico dedicado exclusivamente  a alojar instancias de VMs para su proyecto especifico 
+
+
+
+## Shielded VMs
+- Las Shielded VMs ofrecen una integridad verificable a sus instancias  de maquinas virtuales , para estar seguros de que no han sido comprometidas por un malware no por rootkits.
+- Es la primera oferta a la iniciativa de Shielded Cloud. La iniciativa de Shielded Cloud tiene como fin  proporcionar una base mas segura para todo Google Cloud
+
+## Confidential VMs
+- Son un tipo de VM que permiten cifrar los datos  en uso mientras  se procesan
+- Una VM confidencial es un tipo de maquina **N2** en Compute Engine.
+
+
+## Images
+- Al crear una maquina virtual, puede elegir la imagen del disco de arranque.
+- Esta imagen incluye el gestor  de arranque, el S.O, la estructura del S.O, cualquier software preconfigurado y cualquier otra personalizacion
+- Puede seleccionar una imagen  *publica* o *personalizada*
+- Puedes elegir entre imagenes de Linux o Windows
+- Tenemos la opcion de importar nuestras propias images
