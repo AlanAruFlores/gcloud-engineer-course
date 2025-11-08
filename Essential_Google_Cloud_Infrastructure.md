@@ -215,8 +215,69 @@ Para extender el rango IP de la subred debemos ir a ella y configurar manualment
 - Alta disponibilidad 
 - Permite crear y actualizar  millones de registros DNS sin la carga de gestionar tus propios servidores y software DNS.
 
+## Lab: VPC Networking
 
 
+## Common Network Designs
+
+### increased availability with multiples zones
+![[Pasted image 20251107212801.png]]
+- Si la aplicacion necesita mayor disponibilidad, podemos colocar 2 VMs en multiples zonas por dentro de la misma subnet
+- El uso de una misma subnet le permite crear reglas de firewall contra la subred
+- Si deployamos instancias , de diferentes zones, dentro de una misma subnet SE OBTIENE UNA MAYOR DISPONIBILIDAD sin una complejidad de seguridad adicional
+
+### Globalization with multiples regions
+![[Pasted image 20251107213018.png]]
+- esta es una arquitectura que esta compuesta por diferentes regiones.
+- proporciona un grado aun mayor de independencia ante fallos
+- esto permite diseñar sistemas MAS ROBUSTOS con recursos distribuido en distintos dominios
+
+
+### Cloud NAT
+![[Pasted image 20251107213716.png]]
+- Es el servicio  de traduccion de direcciones  de red gestionado por Google el cual permite aprovisionar a las instancias de tu aplicacion sin direcciones IP publicas
+- Tambien permite acceder a internet de forma controlada y eficiente
+- Esto significa que las instancias privada pueden acceder a INTERNET para actualizaciones, parches, gestion de configuracion y mucho mas
+- Aca Cloud NAT permite que 2 instancias privadas ACCEDAN A UN SERVIDOR DE ACTUALIZACIONES DE INTERNET, lo que se conoce como NAT de SALIDA
+- Cloud NAT no permite la ENTRADA, por ende los hosts fuera de la VPC no tendran acceso a nuestras VMs internas. Esto permite que las instancias se mantengan aisladas y seguras
+
+## Lab: Implementing Google Services Access and Cloud NAT
+
+```bash
+
+# Nos autenticamos sin usar el navegador
+gcloud auth login --no-launch-browser
+
+# Nos conectamos a la VM mediante SSH
+gcloud compute ssh vm-internal --zone us-east1-d --tunnel-through-iap
+
+# Enviamos paquetes
+ping -c 2 www.google.com
+
+# Exportamos una variable de entorno para guardar el nombre del bucket 
+export MY_BUCKET=[enter your bucket name here]
+
+# Pasamos un imagen de un repo al repo nuestro de cloud storage
+gcloud storage cp gs://cloud-training/gcpnet/private/access.svg gs://$MY_BUCKET
+
+# Con el archivo ahora vamos a descargarlo en nuestra VM
+# Nota: debemos tener habilitado en nuestra subnet el acceso a los servicios de Google ya que por default vienen desactivadas
+gcloud compute ssh vm-internal --zone us-east1-d --tunnel-through-iap
+gcloud storage cp gs://$MY_BUCKET/*.svg .
+
+```
+**Notas:**
+- Primero creamos una RED VPC en Google Cloud de tipo Custom con un rango IP "10.130.0.0/20"
+- Creamos una regla de firewall para poder conectarnos a nuestras instancias con SSH
+	- ![[Pasted image 20251107223538.png]]
+- Creamos las VMS sin direcciones publicas y la interfaz de red debe apuntar a la red VPC que creamos en el primer paso
+- Podemos ya crear un servicio de GCloud como Cloud Storage. 
+- Si intentamos acceder a nuestra VM con SSH y intentamos obtener un FILE , NO NOS VA A DEJAR porque no tenemos habilitado los servicios de Google
+- Para ello debemos habilitarla
+- Luego creamos nuestra NAT. Dicha NAT tiene que apuntar a nuestra red VPC del paso 1. Esto con el fin de que nuestras VMS tengan acceso a Internet y no viceversa.
+		- ![[Pasted image 20251107224123.png]]
+- Por ultimo, podemos habilitar los *logging*, esto para ver los registros que van sucediendo en la NAT:
+	- ![[Pasted image 20251107224302.png]]
 ## Virtual Machines
 - Son el componente  de infraestructura mas comun y en Google Cloud las proporciona Compute Engine.
 - Es similar a una computadora fisica.
@@ -336,8 +397,6 @@ Existen 4 familias de maquinas de Compute Engine
 - Si tiene workloads que necesita aislamiento fisico de otras cargas de trabajo o VMs para cumplir con los requisitos de cumplimiento , deberiamos considerar estos *solo-tenant nodes*
 - Es un servidor fisico dedicado exclusivamente  a alojar instancias de VMs para su proyecto especifico 
 
-
-
 ## Shielded VMs
 - Las Shielded VMs ofrecen una integridad verificable a sus instancias  de maquinas virtuales , para estar seguros de que no han sido comprometidas por un malware no por rootkits.
 - Es la primera oferta a la iniciativa de Shielded Cloud. La iniciativa de Shielded Cloud tiene como fin  proporcionar una base mas segura para todo Google Cloud
@@ -346,10 +405,13 @@ Existen 4 familias de maquinas de Compute Engine
 - Son un tipo de VM que permiten cifrar los datos  en uso mientras  se procesan
 - Una VM confidencial es un tipo de maquina **N2** en Compute Engine.
 
-
 ## Images
 - Al crear una maquina virtual, puede elegir la imagen del disco de arranque.
 - Esta imagen incluye el gestor  de arranque, el S.O, la estructura del S.O, cualquier software preconfigurado y cualquier otra personalizacion
 - Puede seleccionar una imagen  *publica* o *personalizada*
 - Puedes elegir entre imagenes de Linux o Windows
 - Tenemos la opcion de importar nuestras propias images
+
+
+
+
