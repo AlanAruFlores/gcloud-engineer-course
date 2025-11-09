@@ -330,6 +330,55 @@ Se recomiendan principalmente para modelos que se entrenan durante largos period
 - Algunos de estos estados requieren de la Consola de Google Cloud, el comando gcloud, y otros se hacen mediante el S.O
 - Hay que ver que algunos de estas acciones duran 90 segundos, si la instancia pasa mas de 30 segundos entonces *Compute Engine* envia una señal ACPI G3 Mechanical Off al Sistema operativo.
 
+## Lab: Creating VMs
+```bash
+
+# Creamos las 3 VMS , una de ellas (la ultima) es una VM custom)
+     gcloud compute instances create alan-instance \
+         --project=qwiklabs-gcp-00-d0e38555bb96 \
+        --zone=us-central1-a \
+         --machine-type=e2-medium \
+         --image=https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-12-bookworm-v20251014 \
+         --boot-disk-size=10GB \
+         --boot-disk-type=pd-balanced \
+         --service-account=554995463521-compute@developer.gserviceaccount.com \
+         
+         
+    gcloud compute instances create alan2-instance \
+         --project=qwiklabs-gcp-00-d0e38555bb96 \
+         --zone=us-central1-a \
+         --machine-type=e2-standard-2 \
+         --image=https://www.googleapis.com/compute/v1/projects/windows-cloud/global/images/windows-server-2016-dc-core-v20251029 \
+         --boot-disk-size=64GB \
+         --boot-disk-type=pd-ssd \
+         --tags=http-server,https-server \
+         --service-account=554995463521-compute@developer.gserviceaccount.com \
+         
+         
+         
+    gcloud compute instances create alan3-instance \
+         --project=qwiklabs-gcp-00-d0e38555bb96 \
+         --zone=us-central1-a \
+         --machine-type=e2-custom-2-4096 \
+         --image=https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-12-bookworm-v20251014 \
+         --boot-disk-size=10GB \
+         --boot-disk-type=pd-balanced \
+         --service-account=554995463521-compute@developer.gserviceaccount.com \
+
+# Accedmeos a la instancia custom
+
+# Vemos el uso de la memoria
+free
+
+# Obtenemos informacion mas a detalle de la RAM
+sudo dmidecode -t 17
+
+# Verifica la cantidad de procesadores
+nproc
+
+# Obtener detalles de la CPU instalada en tu VM
+lscpu
+```
 
 
 ## Compute Options
@@ -413,5 +462,242 @@ Existen 4 familias de maquinas de Compute Engine
 - Tenemos la opcion de importar nuestras propias images
 
 
+## Disk Options
+
+- Cada VM viene con ununico disco persistente raiz, porque estas eligiendo una imagen sobre la cual cargarlo
+	- Es *bootable* en el sentido que se puede adjuntar una maquina virtual e iniciar desde ella.
+	- Es *durable* puede sobrevivir si una VM es eliminada
+- Para que un disco de arranque sobreviva a la eliminacion de una VM, debe deshabilitar la opcion de  *Delete boot disk when instance is deleted*
+
+### Types of Disk
+
+![[Pasted image 20251108124621.png]]
+
+#### Persistent Disk
+- El primer disco que creamos es lo que llamamos un disco persistente
+- Significa que se conectara a la VM a traves de la interfaz de red
+- No esta conectado FISICAMENTE a la maquina, es decir, permite que el Disk sobreviva si la VM es eliminada
+- Podemos crear *Snapshots*, que son copias de seguridad incrementales
+- La eleccion entre HDD y SSD se hace teniendo en cuenta 2 factores:  Coste y rendimiento
+- Se pueden redimensionar dinamicamente
+- Podemos tener un Disk en modo lectura para varias VMs, generando un Disk compartido
+- Zona o regional
+	- pd-standard: los discos persistentes estandard estan respaldados por unidades de disco duro estandar y son adecuados para grandes cargas de trabajo de procesamiento 
+	- pd-ssd: discos persistentes SSD estan respaldados por unidades de estado solido y son recomendados para aplicaicones empresariales y bases de datos de alto rendimiento con menor latencia
+	- pd-balanced: estan tambien respaldados por unidades de estado solido,**son una alternativa a pd-ssd**. Estos tienen el mismo IOPS maximo que los pd.-ssd y un IOPS por GB inferior.
+	- pd-extreme: son discos persistentes zonales respaldados tambien por unidades de estado solido. Estan adecuados para bases de datos de ALTA GAMA 
+- Cifrado
+	- Google-managed: Por defecto *Compute Engine* cifra los datos en reposo. Google Cloud lo gestiona por ti 
+	- Customer-managed: esto es si nosotros queremos manualmente gestionar el metodo de cifrado
+	- Customer-supplied
 
 
+#### Local SSD Disk
+- Las SSD locales se diferencias de las persistentes en que estan fisicamente conectadas a la VM
+- Estos discos son *efimeros* , pero proporcionan un IOPS muy alto 
+- tienen un tamaño de 375 GB y se pueden conectar  hasta 24 paticiones SSD locales ara un total de 9 TB por instancia
+- La data SOLO se conserva tras un reinicio , pero si se elimina la VM esta se elimina.
+
+#### RAM Disk
+- Podemos usar tmpfs si queremos almacenar datos en memoria
+- Este tiene el tipo de rendimiento mas alto si necesitamos estructuras muy pequeñas
+- Son volatiles
+- Considerar usar un disco persistente como backup de la memoria RAM
+
+## Common Compute Engine actions
+
+#### Metadata and Scripts
+![[Pasted image 20251108125908.png]]
+
+- Cada VM guarda los metadatos en un servidor de metadata
+- Es particularmente util con scripts de inicio y apagado ya que puede usarse para obtener  mediante programacion de forma unica. Por ejemplo: podemos tener un script de inicio que tome los metadatos de otro servicio externo para inicializar la BD
+- Recomendamos almacenar los scripts de inicio/apagado en Cloud Storage
+
+
+#### Move an instance to a new zone or region
+![[Pasted image 20251108130244.png]]
+- Para mover una instancia de una zona/region a otra, debemos apagarla primeramente y luego de mover la region , reiniciarla.
+- Actualizemos luego las referencias de otros servicios, es decir, que los servicios ya no apunten a la anterior VM sino a la actualizada.
+
+#### Snapshot: Backup critical data
+![[Pasted image 20251108130435.png]]
+- Se usan los snapshot para realizar copias de seguridad de datos criticos en una solucion de almacenamiento duradera para cumplir con los requisitosde aplicacion, disponibilidad y recuperacion
+- Estos files se guardan en *Cloud Storage*
+
+
+#### Snapshot: Migrate data between zones
+![[Pasted image 20251108130624.png]]
+- Los snapshots tambien se usan para migrar datos de una zona a otra
+#### Snapshot: transfer to SSD to improve perfomance
+- Los snapshots tambien se podria usar  para transferir datos desde un persistent HDD a un persistent SSD
+
+## Persistent Disk Snapshots
+- Solo estan disponibles para *disk persistents* y no para SSD locales
+- Son utiles para copias de seguridad
+- son incrementales y se comprimen automaticamente
+- Podemos programar los snapshots, de tal manera que pueda ejecutarse periodicamente
+
+
+
+## Lab: Servidor de Minecraft en Google Cloud
+
+## Tarea 1. Crear la VM
+### Configuración básica
+- Nombre: `mc-server`
+- Región: `us-east4`
+- Zona: `us-east4-b`
+- Sistema operativo: Debian GNU/Linux 12 (bookworm)
+
+### Disco adicional
+- Nombre: `minecraft-disk`
+- Tipo: SSD persistente
+- Tamaño: 50 GB
+- Encriptación: Clave administrada por Google
+
+### Red
+- Etiqueta de red: `minecraft-server`
+- IP externa: Reservar estática → `mc-server-ip`
+
+### Seguridad
+- Permisos de acceso a API: Configurar acceso por API
+- Almacenamiento: Lectura y escritura
+#### Tarea 2. Preparar el disco de datos
+### Crear punto de montaje
+```bash
+sudo mkdir -p /home/minecraft
+Formatear disco
+bash
+Copy code
+sudo mkfs.ext4 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/google-minecraft-disk
+Montar disco
+bash
+Copy code
+sudo mount -o discard,defaults /dev/disk/by-id/google-minecraft-disk /home/minecraft
+Tarea 3. Instalar y ejecutar Minecraft
+Instalar Java y utilidades
+bash
+Copy code
+sudo apt-get update
+sudo apt-get install -y default-jre-headless
+sudo apt-get install wget
+Descargar servidor de Minecraft
+bash
+Copy code
+cd /home/minecraft
+sudo wget https://launcher.mojang.com/v1/objects/d0d0fe2b1dc6ab4c65554cb734270872b72dadd6/server.jar
+Inicializar servidor
+bash
+Copy code
+sudo java -Xmx1024M -Xms1024M -jar server.jar nogui
+Aceptar EULA
+bash
+Copy code
+sudo nano eula.txt
+# Cambiar: eula=false → eula=true
+Ejecutar con screen
+bash
+Copy code
+sudo apt-get install -y screen
+sudo screen -S mcs java -Xmx1024M -Xms1024M -jar server.jar nogui
+Desconectar screen:
+
+css
+Copy code
+Ctrl + A → Ctrl + D
+Reconectar:
+
+bash
+Copy code
+sudo screen -r mcs
+Salir de SSH:
+
+bash
+Copy code
+exit
+Tarea 4. Permitir tráfico de clientes
+Crear regla de firewall
+Nombre: minecraft-rule
+
+Etiqueta de destino: minecraft-server
+
+Rango origen: 0.0.0.0/0
+
+Protocolo: tcp:25565
+
+Esto permite acceso público al servidor desde clientes de Minecraft.
+
+Tarea 5. Copias de seguridad automáticas
+Crear bucket en Cloud Storage
+bash
+Copy code
+export YOUR_BUCKET_NAME=<tu-nombre-unico>
+gcloud storage buckets create gs://$YOUR_BUCKET_NAME-minecraft-backup
+Crear script de respaldo
+bash
+Copy code
+cd /home/minecraft
+sudo nano /home/minecraft/backup.sh
+Contenido del script:
+
+bash
+Copy code
+#!/bin/bash
+screen -r mcs -X stuff '/save-all\n/save-off\n'
+/usr/bin/gcloud storage cp -R ${BASH_SOURCE%/*}/world gs://${YOUR_BUCKET_NAME}-minecraft-backup/$(date "+%Y%m%d-%H%M%S")-world
+screen -r mcs -X stuff '/save-on\n'
+Dar permisos de ejecución:
+
+bash
+Copy code
+sudo chmod 755 /home/minecraft/backup.sh
+Probar script:
+
+bash
+Copy code
+. /home/minecraft/backup.sh
+Programar con cron
+bash
+Copy code
+sudo crontab -e
+Agregar al final:
+
+ruby
+Copy code
+0 */4 * * * /home/minecraft/backup.sh
+Esto ejecuta copias de seguridad cada 4 horas.
+
+Tarea 6. Mantenimiento del servidor
+Apagar el servidor
+bash
+Copy code
+sudo screen -r -X stuff '/stop\n'
+Detener la VM
+En la consola de Google Cloud:
+
+Compute Engine > mc-server > Detener
+
+Automatizar scripts de inicio y apagado
+En la configuración de metadatos de la VM:
+
+Clave	Valor
+startup-script-url	https://storage.googleapis.com/cloud-training/archinfra/mcserver/startup.sh
+shutdown-script-url	https://storage.googleapis.com/cloud-training/archinfra/mcserver/shutdown.sh
+
+Esto automatiza el montaje del disco y el inicio/parada del servidor de Minecraft.
+
+Resultado final
+VM Debian con Java y Minecraft Server operativo
+
+IP pública accesible en puerto 25565
+
+Copias de seguridad automáticas en Cloud Storage
+
+Scripts de inicio/apagado automatizados
+
+
+```bash
+   gcloud compute instances get-serial-port-output mc-server --project qwiklabs-gcp-00-d6633c1f45c0 --zone us-east4-b                  
+   
+   
+   
+   ```
