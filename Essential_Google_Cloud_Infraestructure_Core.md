@@ -96,6 +96,90 @@ A continuacion se muestra los roles de esta jerarquia:_
 	- Por defecto, la cuenta de servicio se habilita para esa instancia
 - Los roles de las cuentas de servicio pueden asignar a grupos o usuarios
 
-
+ 
 ![[Pasted image 20251109163342.png]] 
 - Se pueden definir scopes (ambitos) donde dependiendo del ambito, la cuenta de servicio de aplicacion aplicara ciertos permisos
+
+
+
+## Cloud Storage
+
+- permite  almacenar y recuperar datos a nivel mundial y en cualquier momento
+- podemos  usar cloud storage para entregar  contenidos de sitios web, almacenar archivos y distribuir los datos a traves de la descarga.
+- se trata de una coleccion de buckets  en lo que se colocan objetos
+- dispone de **tipos de clases**
+	- *Standard:* es ideal para datos que se acceden con frecuencia o que se almacenan por periodos breves. Es la mas costosa pero no tiene duracion minima de almacenamiento ni costos de recuperacion
+	- *Nearline:* es muy asequible y duradero  para datos  de acceso poco frecuente, como contenido multimedia de cola larga, copias de seguridad y archivado de datos. La minima duracion de acceso es de 30 dias
+	- *Coldline:* es un servicio de muy bajo costo y muy duraradero  para almacenar datos de acceso poco frecuente. El acceso minimo es de 90 dias y tiene mayor costo de acceso a los datos
+	- *Archive:* es el servicio mas duradero y de menor costo para el archivado  de datos, las copias de seguridad en linea y la recuperacion ante desastres. Es la mejor opcion para datos a los que accedes menos de una vez al año
+- se dividen en varios elementos diferentes:
+	- *buckets:* deben tener un nombre nivel unico global. Los datos son objetos que heredan su clase de almacenamiento y pueden ser archivos de texto, documentos, videos, etc.
+	- *objetos:* son archivos de texto, documentos, videos, etc.
+	- *Access:* para accederlo podemos usar **comando de gcloud** o **RESTFUL JSON API o XML API**
+
+#### Features de Cloud Storage  
+- El cliente puede proporcionar su propia clave de encriptacion en lugar de las que ofrece Google Cloud
+- tambien proporciona la administracion del ciclo de vida de los objetos, lo que permite eliminar o archivar el objeto automaticamente
+- control de versiones de objetos, esto permite mantener multiples versiones de objetos en el bucket.
+- sincronizacion de directorios para que pueda sincronizar un directorio de VM con un bucket.
+- las notificaciones de los objetos  se pueden configurar para Cloud Storage mediante Pub/Sub
+- la AutoClass gestiona todos los aspectos de las clases de almacenamiento para un bucket
+- podemos especificar **acciones** en  "la administracion del ciclo de vida" los objetos, si cumplen ciertas condiciones.
+- la "funcion de bloqueo de retencion de objetos" le permite establecer la configuracion de retencion en objetos dentro de los buckets de Cloud Storage que tenga habilitada la funcion.
+
+#### Data import services
+![[Pasted image 20251110081844.png]]
+- *Transfer Appliance:* es un dispositivo de hardware que puede utilizar para migrar  de forma segura grandes volumenes de datos (cientos de terabytes hasta 1 petabyte)
+- *Storage Transfer Service:* permite importaciones de datos en linea de alto rendimiento. Esa fuiente puede ser de otro bucket de Cloud Storage , bucket S3 o una ubicacion HTTP/S
+- *Offline media import:* es un servicio de terceros en lo que los medios fisicos se envian a un proveedor  que carga los datos
+
+
+
+## FileStore
+![[Pasted image 20251110222021.png]]
+- Es un servicio de almacenamiento administrado para aplicaciones que requieren una interfaz de sistemas de archivos y un sistema de archivos compartido para datos.
+- Podemos ajustar la capacidad y el rendimiento de FileStore en forma independiente genera un rendimiento previsibile más agil para los workloads basadas en archivos
+- Admite cualquier cliente con NFSv3
+- Obtiene beneficios como el "rendimiento escalable", cientos de terabytes de capacidad y el bloqueo de los archivos
+- Con esto, podemos migrar las aplicaciones empresariales mas rapido
+- FileStore admite una amplia variedad de aplicaciones empresariales que requieren de un sistema compartido
+- EDA (Electronic Design Automation) se basa en la administracion de datos. Requiere la capacidad  de dividir los workloads en lotes en miles de nucleos.
+- FileStore ofrece latencia baja para operaciones de archivos y, cuando cambian las necesidades de rendimiento o capacidad puedes aumentar/disminuir el tamaño de las instancias
+
+
+
+## Cloud SQL
+![[Pasted image 20251110222951.png]]
+- es un servicio totalmente gestionado por base de datos MySQL, PostgresSQL o Microsoft SQL Server
+- los parches  y las actualizaciones se aplican automaticamente pero aun asi hay que administrar los usuarios con las herramientas de autenticacion nativas que vienen  con estas bases de datos
+- Cloud SQL admite muchos clientes
+	- gcloud sql
+	- App Engine, Google Workspace scripts
+	- Application and tools:
+		- SQL Workbench, Toad
+		- External applications usando drivers de MySQL
+- Ofrece alto rendimiento y escalabilidad
+	- con hasta 64 TB de capacidad de almacenamiento
+	- 60000 IOPS
+	- 624 GB RAM por instancia
+	- puede escalar facilmente hasta 96 nucleos de procesador y escalar horizontalmente con replicas de lectura
+
+#### Cloud SQL Services
+![[Pasted image 20251110224116.png]]
+- *HA Configuration*: la configuracion se compone de una instancia primaria y una instancia de reserva. Mediante la replicacion sincrona, todas las escrituras hechas en la instancia principal se replican en los discos de ambas zonas. En caso de un fallo, la instancia *StandBy* se convierte en la principal.
+- *Backup Service:* Cloud SQL proporciona copias de seguridad automatizadas
+- *Import/Export:* puedes importar y exportar bases de datos usando **mysqldump**, o importar y exportar archivos CSV
+- *Scaling:* Cloud SQL tambien puede escalar
+
+
+
+![[Pasted image 20251110224808.png]]
+- Si vamos a conectar nuestra Cloud SQL con nuestras instancias en el mismo proyecto, garantizamos que sea segura la conexion debido a que se acceden mediante IP privadas y no queda expuesta
+- Si vamos a conectar con una aplicacion externa tenemos 3 opciones:
+	- Usar *Cloud SQL Auth Proxy* que se encarga de la autenticacion, el cifrado y la rotacion de claves por usted (Recomendado)
+	- Si necesitamos el control SSL, entonces podemos hacerlo manualmente: generando y rotando periodicamente los certificados
+	- Podemos autorizar (sin cifrar) una IP especifica para conectarse a nuestra Cloud SQL}
+
+
+## Arbol de desiciones
+![[Pasted image 20251110224855.png]]
