@@ -183,3 +183,45 @@ A continuacion se muestra los roles de esta jerarquia:_
 
 ## Arbol de desiciones
 ![[Pasted image 20251110224855.png]]
+
+
+
+## Spanner
+![[Pasted image 20251112224254.png]]
+- Es un servicio diseñado para la nube, para combinar las ventajas de la estructura de la bases de datos relacionales  con la escalabilidad horizontal no relacional
+- Proporciona petabytes de capacidad y ofrece consistencia transaccional a escala global, esquemas, SQL y replicacion sincronica automatica para alta disponibilidad
+- Spanner ofrece lo mejor de los mundos relacionales y no relaciones.
+
+
+![[Pasted image 20251112224835.png]]
+- Una instancia Spanner replica datos en N Zonas de la nube, pueden estar dentro de una region o en varias regiones.
+- La **ubicacion** de la base de datos es configurable
+- Esta arquitectura permite una alta disponibilidad y una ubicacion global
+
+## AlloyDB
+![[Pasted image 20251112225344.png]]
+- Es para PostgreSQL
+- Es un servicio de base de datos totalmente administrado y compatible a PostgresSQL
+- Esta diseñado para cargas de trabajo exigentes como el procesamiento hibrido transaccional y analitico
+- Combina un motor de bases de datos desarrollado por Google con una **arquitectura multinodo** basada en la nube. Para ofrecer rendimiento, fiabilidad y disponibilidad 
+- Permite copias de seguridad, replicacion, aplicacion de parches y gestion de capacidad
+- Proporciona un procesamiento transaccional rapido, adecuado para wokloads exigentes
+
+## Firestore
+![[Pasted image 20251112225738.png]]
+- Es una base de datos de documentos NoSQL, nativa de la nube, sin servidor, rapida y totalmente administrada
+- simplifica el almacenamiento, la sincronizacion, y consultas de los datos
+- Sus librerias dan live syncronization y soporte sin conexion
+- Ofrece funciones de seguridad
+- Admite transacciones ACID
+- Permite la replicacion multiregional
+- Firestore tiene 2 modos:
+	- *Datastore mode:* 
+		- Es compatible con aplicaciones DataStore 
+		- Las queries son muy consistentes
+		- No hay limite en grupo de entidades
+	- *Native mode:*
+		- Nueva capa de almacenamiento fuertemente consistente
+		- Un modelo de datos de coleccion y documentos
+		- Actualizaciones en tiempo real
+		- Librerias para clientes web y mobile
