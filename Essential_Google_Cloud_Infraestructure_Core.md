@@ -225,3 +225,26 @@ A continuacion se muestra los roles de esta jerarquia:_
 		- Un modelo de datos de coleccion y documentos
 		- Actualizaciones en tiempo real
 		- Librerias para clientes web y mobile
+
+## BigTable
+- Es una base de datos NoSQL totalmente  gestionada con capacidad de petabyte y latencia muy baja
+- BigTable es en realidad la misma base de datos que impulsa muchos de los servicios principales de Google
+- Es una excelente opcion tanto para operaciones operativas como analiticas
+- Se integra facilmente con herramientas populares como  Hadoop, Dataflow y Dataproc
+- Es compatible con HBase
+- BigTable almacena datos en tablas masivamente escalables, cada uno de las cuales es un mapa de clave/valor ordenado
+- Las tablase de Bigtable son **dispérsas**, es decir, si la celda no contiene informacion entonces no ocupa espacio.
+
+![[Pasted image 20251113230730.png]]
+- Esta es una version simplificada de la arquitectura de BigTable
+- Una tabla en Bigtable se divide en bloques de filas contiguas, llamadas tablets para ayudar a equilibrar los workloads de las consultas
+- Los **tablets** se almacenan en **Colossus**, el sistema de archivos de Google, en formato SSTable.
+- Un **SSTable** proporciona un mapa persitente, ordenado e inmutable de claves y valores.
+
+
+## Memory Store
+![[Pasted image 20251113231332.png]]
+- MemoryStore para Redis proporciona un servicio de almacenamiento de datos en memoria totalmente administrado, construido sobre una infraestructura escalable, segura y de alta disponibilidad gestionada por Google 
+- Las Apps pueden tener mejor rendimiento aprovechando el servicio de Redis, altamente escalable, disponible y seguro
+- Tambien automatiza tareas complejas como habilitar la alta disponibilidad, la conmutacion por error, la aplicacion de parches y la monitorizacion
+- Admite instancias hasta 300GB y un rendimiento de red de 12 Gbit/segundo
