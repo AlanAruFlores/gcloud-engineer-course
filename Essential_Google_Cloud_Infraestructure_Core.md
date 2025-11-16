@@ -248,3 +248,107 @@ A continuacion se muestra los roles de esta jerarquia:_
 - Las Apps pueden tener mejor rendimiento aprovechando el servicio de Redis, altamente escalable, disponible y seguro
 - Tambien automatiza tareas complejas como habilitar la alta disponibilidad, la conmutacion por error, la aplicacion de parches y la monitorizacion
 - Admite instancias hasta 300GB y un rendimiento de red de 12 Gbit/segundo
+
+
+
+## Resource Manager
+![[Pasted image 20251114214708.png]]
+- permite  gestionar los recursos de forma jerarquica del proyecto, carpeta y organizacion
+- Las politicas contienen un conjunto de roles y miembros y se establecen en funcion de los recursos
+- estos recursos heredan las politicas de su recurso padre
+- La facturacion se mide en recursos como "tasa de uso o el tiempo", "el numero de elementos" o "el uso de las funciones"
+
+## Quotas
+- Todos los recursos de Google Cloud estan sujetos a cuotas o limites del proyecto
+- evitan un consumo descontrolado en caso de error o ataque malicioso
+- evitan picos de facturacion no esperados
+- obligan a considerar y realizar revisiones periodicas
+
+## Labels
+- son una utilidad  para organizar  los recursos de Google Cloud
+- son pares clave-valor que puede adjuntar  a tus recursos como VMs, discos, instantaneas e imagenes
+- se pueden usar las etiquetas en scripts para ayudar a analizar costos o para ejecutar masivas operaciones en multiples recursos
+
+
+## Looker Studio
+![[Pasted image 20251114221108.png]]
+- Nos permite ver los gastos
+- transforma  tus datos en paneles e informes informativos, faciles de leer, faciles de compartir y totalmente personalizas
+
+## Google Cloud Observability
+![[Pasted image 20251115162428.png]]
+- descubre dinamicamente recursos en la nube y servicios de aplicaciones basandose en una profunda integracion con Google Cloud y  Amazon Web Services 
+- cuenta con servicios de registro de monitoreo, la notificacion de errores y el seguimiento de fallas
+- estos servicios son gestionados por paquetes completamente diferentes o por una coleccion de sw integrada de forma flexible
+- solo pagas por lo que usas y hay cuotas de uso gratuito
+
+
+
+## Cloud Monitoring
+- la monitorizacion es importante para Google porque constituye la base de la ingenieria de fiabilidad de sitios
+- una disciplina que aplica aspectos de la ingenieria de software a operaciones cuyo objetivo es crear sistemas de software ultraescalables y altamente fiables
+- Cloud Monitoring configura dinamicamente la *monitorizacion* despues de que se implementen los recursos
+- Cloud Monitoring cuenta con  valores predeterminados que permiten generar graficos para actividades de monitorizacion basicas.
+- permite monitorizar las metricas de tu plataforma, sistema y aplicacion
+- Nos permiten crear paneles personalizados que contienen graficos a las metricas que deseamos supervisar. Podemos crear graficos que gestionan el uso  de CPU de sus instancias, los paquetes/bytes enviados y recibidos por esas instancias y los paquetes/bytes  descartados por el firewall de esas instancias.
+- Podemos crear politicas de alerta que te notifiquen si se cumple una condicion, esto con el fin de en lugar de estar monitoreando todo el tiempo poder asignar algo que nos alerte.
+	- Esto se envia en canales como gmail, SMS, etc.
+
+
+![[Pasted image 20251115165151.png]]
+- Se pueden configurar comprobaciones de tiempo de actividad  para probar la inactividad  de los servicios desde ubicaciones de todo el mundo.
+
+
+####  El Metric Scope es la entidad raiz que contiene la informacion de supervision y configuracion
+![[Pasted image 20251115163839.png]]
+- Cada Metric Scope puede tener entre 1 a 375 proyectos monitoreados
+- Se podra monitorizar  los datos de todos los proyectos dentro de ese ambito.
+- Scope Metric contiene los paneles personalizados, las politicas de alertas, las comprobaciones de tiempo de actividad, los canales de notificacion y las definiciones de grupo que usa con sus proyectos supervisados
+- Para acceder a una cuenta AWS, debe configurar un proyecto  en Google Cloud para que contenga el AWS Connector
+
+
+#### Ops Agent
+
+![[Pasted image 20251115165742.png]]
+- Ops Agent recopila metricas  dentro de la VM, no a nivel del hipervisor
+- es el agente principal para recopilar datos de telemetria (RAML, CPU, etc) de sus instancias de Compute Engine 
+- El agente de operaciones instalado en Compute Engine  recopila datos  que van mas alla de las metricas del sistema
+-  La recopilada es usada luego por Cloud Monitoring para crear paneles de control
+
+
+#### Logging
+- Cloud Logging te permite almacenar, buscar,  analizar, supervisar y generar alertas sobre datos de registros y eventos de Google Cloud y AWS
+- es un servicio totalmente gestionado  que funciona a gran escala y puede ingerir datos de registro de aplicaciones y sistemas de miles de VMs
+- incluye almacenamiento para los registros, UI llamada Explorador de registros y una API para administrar los registros mediante programacion
+- permite buscar y filtrar registros
+- los logs/registros se conservan hasta 30 dias pero podemos exportarlos a un bucket 
+
+
+![[Pasted image 20251115171239.png]]
+- exportar los registros en BigQuery , nos permitira analizarlos e incluso verlos desde Looker Studio
+- bigquery ejecuta consultas SQL extremadamente rapidas sobre gigabytes a petabytes de datos
+- recomendacion: conectar BQ con Looker Studio
+
+#### Error Reporting
+![[Pasted image 20251115172716.png]]
+- Los informes de errores contabiliza, analiza y agrega  los errores en sus servicios en la nube en ejecucion
+- ofrece una interfaz centralizada de gestion de errores que muestra los resultados con funciones de ordenacion y filtrado
+- puede procesarse en lenguajes de programacion como: Go, Java, .NET, NodeJs, PHP, Python y Ruby
+
+#### Tracing
+![[Pasted image 20251115173104.png]]
+-  es otra funcion de observabilidad de Google Cloud
+- Cloud Trace es un sistema de rastreo distribuido que recopila datos de latencia de sus aplicaciones y los muestra  en la consola de Google Cloud
+- puedes realizar un seguimiento de como se propagan las solicitudes a traves de tu aplicacion y recibir notificacion  detallada sobre el rendimiento.
+- Cloud Trace analiza todos los rastros automaticamente de la aplicacion para generar informes de latencia detallados  que muestran degradaciones de rendimiento
+- puede captar rastros de App Engine, Load Balancers y aplicaciones instrumentadas
+
+#### Profiling
+![[Pasted image 20251115173507.png]]
+- este es la ultima caracteristica de observabilidad de Google Cloud
+- el codigo con bajo rendimiento aumenta la latencia  y el coste de la aplicacion y de los servicios web cada dia. Cloud Profiler analiza continuamente el rendimiento de las funciones que consumen muchos recursos  de CPU o memoria  y que se ejecutan en la aplicacion
+- usa tecnicas de estadisticas  e instrumentacion de muy bajo impacto que se ejecuta en todas las instancias de la aplicacion en produccion
+- tiene soporte con Java, Go, NodeJs y Python
+
+
+
