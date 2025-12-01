@@ -1,4 +1,3 @@
-# Elastic Google Cloud Infraestructure - Scaling and Automation
 
 # Interconnecting Networks
 ## Cloud VPN
@@ -181,3 +180,66 @@ Ahora vamos a explicar un poco mas detalle la arquitectura:
 - Un proxy HTTP(s) de destino recibe una solicitud del cliente, y la procesa.
 - El proxy tambien puede autenticar las comunicaciones mediante el uso de certificaciones SSL
 - Un servicio de backend distribuye solicitudes a backends healthy o saludables.
+
+
+## Cloud CDN
+![[Pasted image 20251130193648.png]]
+- Usa los PoP (Puntos de presencia) perimetrados distribuido globalmente de Google para almacenar en cache contenido de equilibrio de carga HTTP(s) cerca de sus usuarios
+- El contenido se puede almacenar en cache en los nodos CDN
+- Cloud CDN almacena en cache el contenido en los bordes de la red de Google, lo que proporcioan una entrega mas rapida de contenido a sus usuarios y al mismo tiempo reduce los costos de servicio
+- Podemos activarlo solo mediante un checkbox al configurar el servicio de backend de su "Application Load Balancer"
+- Podemos usar los modos de caches para controlar factores que determinan si  Cloud CDN almcena en cache o no su contenido mediante los modos que ofrece
+- Los modos que ofrece son:
+	- USE_ORIGIN_HEADERS: requiere respuestas de origen para establecer directivas de cache validas y encabezados de almacenamiento en cache validos
+	- CACHE_ALL_STATIC: almacena en cache automaticamente el contenido estatico que no tiene la directiva no-store, private o no-cache
+	- FORCE_CACHE_ALL: almacena en cache las respuestas de forma incondicional, anulando cualquier directiva de cache establecida por el origen
+
+## Network Load Balancing
+![[Pasted image 20251130194608.png]]
+- Los "Network load balancing" son balanceadores de carga de capa 4 que pueden manejar trafico TCP, UDP u otro protocolo IP.
+- Estan disponibles como balanceadores de carga proxy o passtrhough
+- Tipos de Balancers:
+	- Proxy: elegirlo si desea configurar un balanceador de proxy inverso con soporte para controles de trafico avanzados y backend locales y en otros entornos de la nube
+	- Passtrhough: elegirlo si deseamos preservar la direccion IP de origen de paquetes de los clientes
+
+#### Arquitectura de un Proxy Network Load Balancer
+![[Pasted image 20251130195158.png]]
+- son de capa 4
+- distribuyen el trafico TCP a las VMs en su red VPC de Google Cloud
+- el trafico finaliza en la capa de equilibrio de carga y luego se reenvia al backend mas cercano mediante TCP
+- se pueden implementar de manera externa o interna
+- estos balanceadores estan construidos sobre front-ends de Google (GSE) o servidores proxys Envoy
+- Se pueden configurar en modos como: global, regional o classic
+
+## Arquitectura de Passtrhough Network Load Balancer
+![[Pasted image 20251130195937.png]]
+- son de capa 4
+- estos balanceadores distribuyen el trafico entre los backends de la misma region que el balanceador de carga 
+- se implementan mediante el uso de redes virtuales Andromeda y Google Maglev
+- no son proxies
+- reciben los paquetes con equilibrio de carga con las direcciones IP de origen y destino del paquete, el protocolo y si el protocolo esta basado en el puerto
+- las respuestas de las VMs del backend van directamente al cliente, no regresan a traves del load balancer (DSR - Direct server return)
+
+
+
+## Internal Load Balancing
+![[Pasted image 20251130203006.png]]
+- Son balanceadores de carga  de capa 7 regionales basados en proxy Envoy 
+- permite ejecutar y escalar el trafico de su aplicacion HTTP detras de una direccion IP interna
+- los balanceadores de carga de aplicaciones internas permiten backends en una region pero pueden configurarse para que los clientes puedan acceder a ellos gloablmente desde cualquier region de Google Cloud
+- optimizan la distribucionj del trafico dentro de su red VPC o redes  conectadas a su red VPC
+- pueden configurarse en 2 modos:
+	- **regional:** garantiza que todos los clientes y los backends sean de uan misma region
+	- **interregion:** permite equilibrar la carga de trafico hacia servicios backend que estan distribuidos, tambien garantiza que el trafico se rediriga al backend mas cercano
+
+#### Internal Passtrhough Network Load Balancers
+
+- es un servicio de equilibrio de carga privado regional para cuando necesitas equilibrar la carga de trafico TCP, UDP, ICMP, ICMPv6, SCTP, ESP, AH y GRE. O sino cuando necesitamos equilibrar la carga de un puerto TCP
+- permite ejecutar y escalar sus servicios detras de una direccion IP privada de balanceo de carga
+- las solicitudes de sus clientes internos permanecen internas en su red y region VPC
+
+#### Internal Proxy Network Load Balancers
+- es un balanceador impulsado por el software de proxy de codigo abierto Envoy y la pila de virtualizacion de red Antromeda
+- equilibra la carga de trafico dentro de su red VPC o redes conectadas a su red VPC
+- es de capa 4
+- estan disponibles  en internos regionales o internos entre regiones
