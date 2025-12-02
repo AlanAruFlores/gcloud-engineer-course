@@ -243,3 +243,73 @@ Ahora vamos a explicar un poco mas detalle la arquitectura:
 - equilibra la carga de trafico dentro de su red VPC o redes conectadas a su red VPC
 - es de capa 4
 - estan disponibles  en internos regionales o internos entre regiones
+
+
+
+# Infraestructure Automation
+
+## Terraform
+![[Pasted image 20251201232404.png]]
+- Es una de las herramientas usadas para infraestructura como Codigo o IaC
+- La "Infraestructure as Code" permite  el rapido aprovisionamiento y eliminacion de infraestructuras
+- El aprovisionamiento bajo demanda de una implementacion es extremadamente poderoso. Esto se puede integrar en un proceso de integracion continua que facilita el camino hacia la implementacion continua. 
+- El aprovisionamiento automatizado de infraestructura significa que la infraestructura se puede aprovisionar a demanda y la complejidad de la implementacion se administra en el codigo. Esto permite **cambiar la infraestructura** a medida que cambian los requisitos
+- La infraestructura para entornos como desarrollo y prueba ahora puede replicar facilmente la produccion y eliminarse inmediatamente cuando no este en uso. Todo esto **gracias a la infraestructura como codigo**
+- Podemos usar varias herramientas para IaC. Google Cloud admite Terraform, donde las implementaciones se describen en un archivo conocido como configuracion (Aqui se detallan todos los recursos que deben aprovisionarse)
+	- Las configuraciones se pueden  modularizar  usando plantillas  que permiten la abstraccion de recursos en componentes reusables en todas las implementaciones
+- **Ademas de Terraform,** Google Cloud tambien proporciona soporte a otras herramientas IaC, entre ellas estan "Chef, Puppet, Ansible y Packer"
+
+
+
+![[Pasted image 20251201232429.png]]
+- Aca nos centraremos en **Terraform**
+- Terraform le permite aprovisionar recursos en Google Cloud (como maquinas virtuales, contenedores, almacenamiento y redes) con archivos de **1configuracion declarativos**. 
+	- El lenguaje de configuracion **HashiCorp** (HCL) permite descripciones concisas de recursos usando bloques, argumentos y expresiones
+	- La implementacion se puede repetir, y podemos eliminarla con un solo clic o comando
+	- La ventaja del **enfoque declarativo** es que permite especificar cual debe ser la configuracion y dejar que el sistema determine los pasos a seguir
+- En lugar de cada recurso por separado, **usted especifica el conjunto de recursos que componen la aplicacion**
+- Terraform usa las API subyacentes  de cada servicio de Google Cloud, para implementar sus recursos
+
+#### Terraform Language
+![[Pasted image 20251201233647.png]]
+- Es la interfaz  de usuario para declara los recursos
+- Los recursos son objetos de infraestructura como maquinas virtuales de Compute Engine, despositos de almacenamiento, contenedores o redes.
+- Una configuracion en terraform es un documento en **lenguaje Terraform** que le indica a Terraform como administrar una coleccion determinada de infraestructura.
+	- Una configuracion puede constar de varios archivos y directorios
+- La sintaxis del lenguaje de Terraform se compone:
+	- Bloques que representan objetos y pueden tener cero o mas etiquetas
+	- Un bloque tiene un cuerpo que le permite declarar argumentos y bloques anidados
+	- Los **argumentos** se usa para asignar un valor a un nombre
+	- Una **expresion** representa un valor que se puede asignar a un identificador 
+
+
+#### Ejemplo con Terraform
+![[Pasted image 20251201234314.png]]
+![[Pasted image 20251201234335.png]]
+- Para el ejemplo vamos a definir una archivo **main.tf**
+- A medida que nuestra infraestructura se vuelve mas compleja podemos construir cada elemento en un archivo separado
+- Comenzemos con **main.tf**, aca es donde especificamos la infraestrucutra que deseamos crear. Es como un plano del estado que deseamos
+	- Primero definimos el provider
+- Luego definimos  nuestra **red**
+	- dejamos el "auto_create_subnetworks" como true, eso provocara que se cree una subred por cada region
+	- luego el **mtu** en 1460
+- Luego definimos nuestro **firewall**, donde permitimos trafico TCP al puesto 80 / 8080
+- una vez que completamos de definir el archivo, podemos crear la infraestructura en el Cloud shell mediante el comando 
+```bash
+# inicializa la nueva configuracion de Terraform
+# la ejecutamos en el directorio del archivo main.tf
+terraform init
+
+# realiza una actualzacion
+terraform plan
+
+# crea la infraestructura definida en el archivo main.tf
+terraform apply
+```
+
+
+
+## Google Cloud Marketplace
+- Permite implementar rapidamente paquetes de software funcionales que se ejecutan en Google Cloud
+- Ofrece soluciones de nivel de produccion de proveedores externos que ya han creado sus configuraciones con Terraform. Estas soluciones se facturan junto con todos los servicios de Google Cloud de su proyecto
+- Google Cloud actualiza las imagenes de esos paquetes de SW para solucionar problemas criticos y vulnerabilidades
