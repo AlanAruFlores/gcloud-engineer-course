@@ -307,9 +307,147 @@ terraform plan
 terraform apply
 ```
 
+## Lab: Automating the Deployment of Infrastructure Using Terraform
+
+Terraform te permite crear, cambiar y mejorar infraestructura de forma segura y predecible. Es una herramienta de código abierto que codifica las API en archivos de configuración declarativa que se pueden compartir entre los miembros de un equipo, tratar como código, editar, revisar o cambiar de versión.
+
+En este lab, crearás una configuración de Terraform con un módulo para automatizar la implementación de la infraestructura de Google Cloud. En particular, implementarás una red de modo automático con una regla de firewall y dos instancias de VM, como se muestra en este diagrama:
+
+```bash
+# Verificamos que se instalo correctamente terraform
+terraform -version
+
+# Creamos un folder donde estara nuestros archivos de configuracion
+mkdir tfinfra
+cd tfinfra
+
+nano provider.tf
+'''
+provider "google" {}
+'''
+
+# iniciamows terraform
+terraform init
+
+nano mynetwork.tf
+'''
+# Create the mynetwork network
+resource "google_compute_network" "mynetwork" {
+  name = "mynetwork"
+  # RESOURCE properties go here
+  auto_create_subnetworks = true
+}
+
+# Add a firewall rule to allow HTTP, SSH, RDP and ICMP traffic on mynetwork
+resource "google_compute_firewall" "mynetwork-allow-http-ssh-rdp-icmp" {
+  name = "mynetwork-allow-http-ssh-rdp-icmp"
+  # RESOURCE properties go here
+  
+  #Indica esta proipiedad que este recurso depende que se cree primero la red
+  network = google_compute_network.mynetwork.self_link
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "80", "3389"]
+  }
+  allow {
+    protocol = "icmp"
+  }
+  source_ranges = ["0.0.0.0/0"]
+}
+
+# Create the mynet-vm-1 instance
+module "mynet-vm-1" {
+  source           = "./instance"
+  instance_name    = "mynet-vm-1"
+  instance_zone    = "us-east4-a"
+  instance_network = google_compute_network.mynetwork.self_link
+}
+
+# Create the mynet-vm-2" instance
+module "mynet-vm-2" {
+  source           = "./instance"
+  instance_name    = "mynet-vm-2"
+  instance_zone    = "europe-west1-c"
+  instance_network = google_compute_network.mynetwork.self_link
+}
+'''
+# Nota: La configuracion de network.tf define la red, firewalls y las VMS a ejecutarse
+
+# Creamos un folder nuevo para las VMs
+mkdir instance
+nano main.tf
+'''
+resource "google_compute_instance" "vm_instance" {
+  name = "${var.instance_name}"
+  # RESOURCE properties go here
+  zone         = "${var.instance_zone}"
+  machine_type = "${var.instance_type}"
+  boot_disk {
+  initialize_params {
+      image = "debian-cloud/debian-11"
+     }
+  }
+  network_interface {
+    network = "${var.instance_network}"
+    access_config {
+      # Allocate a one-to-one NAT IP to the instance
+    }
+  }
+}
+'''
+# Nota: Las vamos a hacer parametizables la creacion de las VMs
+
+nano variables.tf
+'''
+variable "instance_name" {}
+variable "instance_zone" {}
+variable "instance_type" {
+  default = "e2-micro"
+  }
+variable "instance_network" {}
+'''
+# Nota: definimos las variables de entrada para las VMs, como opcional el type instance va a tener por default "e2-micro"
+
+
+# Le damos formato a los archivos .tf
+terraform fmt
+
+terraform init
+
+# Creamos el plan de ejecucion
+terraform plan
+
+# Aplicamos los cambios "yes"
+terraform apply
+```
 
 
 ## Google Cloud Marketplace
 - Permite implementar rapidamente paquetes de software funcionales que se ejecutan en Google Cloud
 - Ofrece soluciones de nivel de produccion de proveedores externos que ya han creado sus configuraciones con Terraform. Estas soluciones se facturan junto con todos los servicios de Google Cloud de su proyecto
 - Google Cloud actualiza las imagenes de esos paquetes de SW para solucionar problemas criticos y vulnerabilidades
+
+# Managed Services
+
+## BigQuery
+![[Pasted image 20251202225814.png]]
+- Es un almacen de datos en la nube sin servidor (serverless), altamente escalable y rentable en Google Cloud
+- Es un almacen de datos a escala de petabytes que permite realizar consultas ultrarrapidas usando la potencia de procesamiento de la infraestructura de Google
+- Es usado para todo tipo de organizaciones
+
+
+## Dataflow
+- Es un servicio administrado para ejecutar una amplia variedad de patrones de procesamiento de datos
+- Es esencialmente un servicio para transformar y enriquecer datos en **batch y stream processing**
+- Se escala automaticamente para satisfacer las demandas de sus pipelines
+- Permite escalar de manera inteligente a millones de consultas por segundo
+- Dataflow admite un desarrollo de canalizacion rapido y simplifcado a traves de la API expresivas de SQL, Java y Python en el SDK de Apache Beam
+- Dataflow esta estrechamente vinculado con otros servicios de Google Cloud como **Google Cloud Observability** por ende podemos monitorear su canalizacion y la calidad de los datos, que entran y salen.
+
+![[Pasted image 20251202231255.png]]
+
+- Como vimos, los datos pueden procesarse en stream o batchs
+- Los datos pueden provenir  de otros servicios de Google Cloud como Datastore o Pub/Sub
+- Tambien los datos pueden provenir de servicios terceros, como **Apache Avro o Apache Kafka**
+- Despues de transformar los datos con Dataflow, puedes analizarlo por BigQuery, Vertex IA o Bigtable
+- Con Looker Studio podemos crear paneles de control en tiempo real para dispositivos IoT
