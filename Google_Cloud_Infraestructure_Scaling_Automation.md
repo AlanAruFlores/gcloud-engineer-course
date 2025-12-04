@@ -451,3 +451,22 @@ terraform apply
 - Tambien los datos pueden provenir de servicios terceros, como **Apache Avro o Apache Kafka**
 - Despues de transformar los datos con Dataflow, puedes analizarlo por BigQuery, Vertex IA o Bigtable
 - Con Looker Studio podemos crear paneles de control en tiempo real para dispositivos IoT
+
+
+## DataPrep
+![[Pasted image 20251203075430.png]]
+- Es un servicio de datos inteligentes para explorar, limpiar y preparar visualmnete datos estructurados y no estructurados para analisis, informes y aprendizaje automatico
+- Es serverless
+- Con esquema automatico, tipo de datos, posible uniones y deteccion de anomalias puede omitir la elaboracion de perfiles de datos que requiere mucho tiempo y concentrarse en el analisis de datos
+- Dataprep es un servicio de socio integrado operado por Trifacta y basado en su solucion de preparacion de datos lider en la industria Trifacta Wangler
+- Google trabaja con Trifacta par brindar una buena experencia de usuario, ya que elimina la necesidad de instalacion de SW inicial, costos de licencia separado o gastos operativos
+- Dataprepn se escala segun al demanda para satisfacer sus crecientes necesidades de preparacion de datos, para que pueda centrarse en el analisis
+
+## DataProc
+![[Pasted image 20251203080308.png]]
+- Es un servicio de la nube rapido, facil de usar y totalmente administrado para ejecutar clusteres  Apache Spark y Apache Hadoop de una manera sencilla
+- solo pagamos los recursos que usas mediante la facturacion por segundo
+	- Si aprovecha **instancias preemptibles** en su cluster, puede reducir aun mas su costo
+- Sin usar Dataproc puede llevar entre 5 - 30 minutos crear clusteres Spark y Hadoop
+- Esta integrado a otros servicios de Google Cloud como **BigQuery, Cloud Storage, BigTable, Cloud Logging y Cloud Monitoring**
+- Como servicio administrado puede crear clusteres rapidamente, administrarlos facilmente y ahorrar dinero cuando no se lo necesite
