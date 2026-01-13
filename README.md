@@ -1,2 +1,2 @@
-# GCP Course
-Notas del curso de GCP
+# Google Cloud Engineer
+Notas del curso de GCP Engineer de Google para realizar el certificado GCP Engineer
